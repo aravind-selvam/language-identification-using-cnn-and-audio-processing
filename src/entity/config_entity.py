@@ -24,7 +24,10 @@ class DataIngestionConfig:
     download_dir: str = os.path.join(from_root(), DATA_DIR_NAME, DOWNLOAD_DIR)
     zip_file_path: str = os.path.join(from_root(), download_dir, ZIP_FILE_NAME)
     unzip_data_dir_path: str = os.path.join(from_root(), DATA_DIR_NAME, EXTRACTED_DATA_DIR)
-    data_ingestion_artifacts_dir: str = os.path.join(from_root(), training_pipeline_config.artifact_dir, DATA_INGESTION_ARTIFACTS_DIR)
-    train_file_path: str = os.path.join(data_ingestion_artifacts_dir, DATA_INGESTION_INGESTED_DIR, TRAIN_FILE_NAME)
-    test_file_path: str = os.path.join(data_ingestion_artifacts_dir, DATA_INGESTION_INGESTED_DIR, TEST_FILE_NAME)
-    
+
+
+@dataclass
+class DataPreprocessingConfig:
+    data_preprocessing_artifacts_dir: str = os.path.join(from_root(), training_pipeline_config.artifact_dir, DATA_PREPROCESSING_ARTIFACTS_DIR)
+    train_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TRAIN_DIR, TRAIN_FILE_NAME)
+    test_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR, TEST_FILE_NAME)

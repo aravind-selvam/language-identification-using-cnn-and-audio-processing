@@ -58,8 +58,8 @@ class DataIngestion:
                 for count, files in enumerate(os.listdir(class_path)):
                     try:
                         dst = f"{folder}-{str(count)}.mp3"
-                        src =f"{audio_dir1}/{folder}/{files}"  
-                        dst =f"{audio_dir1}/{folder}/{dst}"
+                        src =f"{unzip_data_dir_path}/{folder}/{files}"  
+                        dst =f"{unzip_data_dir_path}/{folder}/{dst}"
                         os.rename(src, dst)
                     except FileExistsError:
                         pass
@@ -72,7 +72,10 @@ class DataIngestion:
             self.get_data_from_cloud()
             self.unzip_data()
             self.rename_files()
-            logging.info("Data ingestion completed successfully.")
+            data_ingestion_artifact = DataIngestionArtifacts(downloaded_data_path=self.data_ingestion_config.downloaded_data_path,
+                                                             extracted_data_path=self.data_ingestion_config.extract_dir_path)
+            logging.info("Data ingestion completed successfully... \
+                        Note: If data is not downloaded try deleting the data folder and try again.")
         except Exception as e:
             logging.error("Error in Data Ingestion component! Check above logs")
             raise CustomException(e, sys)

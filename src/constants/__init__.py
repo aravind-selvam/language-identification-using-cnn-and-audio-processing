@@ -21,11 +21,10 @@ SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
 DATA_DIR_NAME: str = "data"
 DOWNLOAD_DIR: str = "download_data"
 EXTRACTED_DATA_DIR: str = "final_data"
-DATA_INGESTION_ARTIFACTS_DIR: str = "data_ingestion_artifacts"
-DATA_INGESTION_INGESTED_DIR: str = "ingested"
-DATA_INGESTION_TRAIN_DIR: str = "train"
-DATA_INGESTION_TEST_DIR: str = "test"
-DATA_INGESTION_TRAIN_TEST_SPLIT_RATION: float = 0.3
 
 # constants related to data preprocessing
+DATA_PREPROCESSING_ARTIFACTS_DIR: str = "data_preprocessing_artifacts"
+DATA_PREPROCESSING_TRAIN_DIR: str = "train"
+DATA_PREPROCESSING_TEST_DIR: str = "test"
+DATA_PREPROCESSING_TRAIN_TEST_SPLIT_RATION: float = 0.3
 
