@@ -7,7 +7,8 @@ LOGS_FILE: str = "language_detector.log"
 
 BUCKET_NAME: str = "spoken-language-data"
 ZIP_FILE_NAME: str = "language-audio-data.zip"
-S3_DATA_URI: str = "s3://spoken-language-data/data/language-audio-data.zip"
+UNZIPPED_FOLDER_NAME: str = "language-audio-data"
+S3_BUCKET_URI = "s3://spoken-language-data/data/"
 
 # common files
 FILE_NAME: str = "metadata.csv"

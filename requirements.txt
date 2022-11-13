@@ -1,2 +1,5 @@
 zipfile38
 from-root
+PyYAML
+numpy
+dill
