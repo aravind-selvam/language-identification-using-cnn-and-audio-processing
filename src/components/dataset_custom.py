@@ -72,6 +72,6 @@ class IndianLanguageDataset(Dataset):
             if signal.shape[0] > 1:
                 signal = torch.mean(signal, dim = 0, keepdim=True)
             return signal
+
     except Exception as e:
-        logging.error(f"Error in custom dataset: IndianLanguageDataset class{e}")
         raise CustomException(e, sys)
