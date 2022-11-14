@@ -52,8 +52,8 @@ class DataIngestion:
                     "Unzipped Folder already exists in unzip directory, so skipping unzip operation.")
             else:
                 os.makedirs(extract_dir_path, exist_ok=True)
-            with ZipFile(zip_file_path, 'r') as zip_file_ref:
-                zip_file_ref.extractall(extract_dir_path)
+                with ZipFile(zip_file_path, 'r') as zip_file_ref:
+                    zip_file_ref.extractall(extract_dir_path)
             logging.info(
                 f"Unzipped file exists in unzip directory: {extract_dir_path}.")
         except Exception as e:
@@ -63,14 +63,15 @@ class DataIngestion:
         try:
             logging.info(
                 "Renaming files in unzip directory to single format...")
-            unzip_data_dir_path = self.data_ingestion_config.unzip_data_dir_path
-            for folder in os.listdir(unzip_data_dir_path):
-                class_path = unzip_data_dir_path + '/' + str(folder)
+            extract_dir_path = self.data_ingestion_config.unzip_data_dir_path
+            unzip_data_path = os.path.join(extract_dir_path, UNZIPPED_FOLDER_NAME)
+            for folder in os.listdir(unzip_data_path):
+                class_path = unzip_data_path + '/' + str(folder)
                 for count, files in enumerate(os.listdir(class_path)):
                     try:
                         dst = f"{folder}-{str(count)}.mp3"
-                        src = f"{unzip_data_dir_path}/{folder}/{files}"
-                        dst = f"{unzip_data_dir_path}/{folder}/{dst}"
+                        src = f"{unzip_data_path}/{folder}/{files}"
+                        dst = f"{unzip_data_path}/{folder}/{dst}"
                         os.rename(src, dst)
                     except FileExistsError:
                         pass
@@ -83,10 +84,11 @@ class DataIngestion:
             self.get_data_from_cloud()
             self.unzip_data()
             self.rename_files()
-            data_ingestion_artifact = DataIngestionArtifacts(downloaded_data_path=self.data_ingestion_config.downloaded_data_path,
-                                                             extracted_data_path=self.data_ingestion_config.extract_dir_path)
+            data_ingestion_artifacts = DataIngestionArtifacts(downloaded_data_path=self.data_ingestion_config.download_dir,
+                                                             extracted_data_path=self.data_ingestion_config.unzip_data_dir_path)
             logging.info("Data ingestion completed successfully... \
                         Note: If data is not downloaded try deleting the data folder and try again.")
+            return data_ingestion_artifacts
         except Exception as e:
             logging.error(
                 "Error in Data Ingestion component! Check above logs")

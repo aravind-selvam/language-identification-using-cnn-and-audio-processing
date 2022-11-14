@@ -11,7 +11,8 @@ UNZIPPED_FOLDER_NAME: str = "language-audio-data"
 S3_BUCKET_URI = "s3://spoken-language-data/data/"
 
 # common files
-FILE_NAME: str = "metadata.csv"
+METADATA_DIR = "metadata"
+METADATA_FILE_NAME: str = "metadata.csv"
 TRAIN_FILE_NAME: str = "metadata_train.csv"
 TEST_FILE_NAME: str = "metadata_test.csv"
 MODEL_FILE_NAME: str = "language_model.pth"
@@ -34,3 +35,13 @@ NUM_SAMPLES: int = 20000
 FFT_SIZE: int = 1024
 HOP_LENGTH: int = 512
 N_MELS: int = 64
+
+# constants related to model training
+MODEL_TRAINING_ARTIFACTS_DIR: str = "model_training_artifacts"
+TRAINED_MODEL_NAME = 'model.pth'
+LEARNING_RATE = 0.001
+EPOCHS = 2
+BATCH_SIZE = 32
+NUM_WORKERS = 4
+STEP_SIZE = 6
+GAMMA = 0.5

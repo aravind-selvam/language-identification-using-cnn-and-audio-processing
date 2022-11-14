@@ -29,12 +29,30 @@ class DataIngestionConfig:
 @dataclass
 class DataPreprocessingConfig:
     data_preprocessing_artifacts_dir: str = os.path.join(from_root(), training_pipeline_config.artifact_dir, DATA_PREPROCESSING_ARTIFACTS_DIR)
+    metadata_dir_path: str = os.path.join(data_preprocessing_artifacts_dir, METADATA_DIR)
+    metadata_path: str = os.path.join(data_preprocessing_artifacts_dir, METADATA_DIR, METADATA_FILE_NAME)
+    train_dir_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TRAIN_DIR)
     train_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TRAIN_DIR, TRAIN_FILE_NAME)
+    test_dir_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR)
     test_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR, TEST_FILE_NAME)
     sample_rate: int = SAMPLE_RATE
+
 
 @dataclass
 class CustomDatasetConfig:
     audio_dir: str = os.path.join(from_root(), DATA_DIR_NAME, EXTRACTED_DATA_DIR, UNZIPPED_FOLDER_NAME)
     sample_rate: int = SAMPLE_RATE
     num_samples: int = NUM_SAMPLES
+
+
+@dataclass
+class ModelTrainerConfig:
+    model_trainer_artifacts_dir: str = os.path.join(from_root(), training_pipeline_config.artifact_dir, MODEL_TRAINING_ARTIFACTS_DIR)
+    trained_model_dir: str = os.path.join(model_trainer_artifacts_dir, TRAINED_MODEL_NAME)
+    learning_rate: float = LEARNING_RATE
+    epochs: int = EPOCHS
+    batch_size: int = BATCH_SIZE
+    num_workers: int = NUM_WORKERS
+    stepsize: int = STEP_SIZE
+    gamma: float = GAMMA
+    

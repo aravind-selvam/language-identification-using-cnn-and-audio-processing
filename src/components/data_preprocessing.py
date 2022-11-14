@@ -1,12 +1,16 @@
+import os, sys
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import StratifiedShuffleSplit
 
-from src.entity.artifact_entity import DataIngestionArtifacts
+from src.entity.artifact_entity import DataIngestionArtifacts, DataPreprocessingArtifacts
 from src.entity.config_entity import DataPreprocessingConfig
 from src.exceptions import CustomException
 from src.logger import logging
 from src.constants import FFT_SIZE,HOP_LENGTH,N_MELS
+from pandas import DataFrame
+from torchaudio.transforms import MelSpectrogram
+import torchaudio
 
 
 class DataPreprocessing:
@@ -35,7 +39,12 @@ class DataPreprocessing:
             metadata.columns = ['filename', 'foldername']
             le = preprocessing.LabelEncoder()
             metadata['labels'] = le.fit_transform(metadata.foldername)
+
+            os.makedirs(os.path.join(self.data_preprocessing_config.metadata_dir_path), exist_ok=True)
+            metadata_path = self.data_preprocessing_config.metadata_path
+            metadata.to_csv(metadata_path, index=False)
             le_name_mapping = dict(zip(le.classes_, le.transform(le.classes_)))
+
             return metadata, le_name_mapping
         except Exception as e:
             raise CustomException(e, sys)
@@ -48,6 +57,11 @@ class DataPreprocessing:
                 strat_train_set = metadata.loc[train_index]
                 strat_val_set = metadata.loc[test_index]
 
+            # create train and test directory if it doesn't exist
+            os.makedirs(os.path.join(self.data_preprocessing_config.train_dir_path), exist_ok=True)
+            os.makedirs(os.path.join(self.data_preprocessing_config.test_dir_path), exist_ok=True)
+
+            # save train and test metadata
             train_file_path = self.data_preprocessing_config.train_file_path
             test_file_path = self.data_preprocessing_config.test_file_path
 
@@ -58,19 +72,24 @@ class DataPreprocessing:
             raise CustomException(e, sys)
     
     def audio_transformations(self) -> MelSpectrogram:
-        mel_spectrogram = torchaudio.transforms.Mealspectrogram(
+        mel_spectrogram = torchaudio.transforms.MelSpectrogram(
         sample_rate= self.data_preprocessing_config.sample_rate,
         n_fft= FFT_SIZE,
-        hop_length=HOP_LENGTH,
-        n_mels=N_MELS
-        ) 
+        hop_length= HOP_LENGTH,
+        n_mels= N_MELS
+        )
+        return mel_spectrogram
 
     def initiate_data_preprocessing(self) -> DataPreprocessingArtifacts:
         try:
-            metadata, mappings = get_meta_data()
-            train_test_split(metadata)
+            metadata, mappings = self.get_meta_data()
+            self.train_test_split(metadata)
             data_preprocessing_artifacts = DataPreprocessingArtifacts(train_metadata_path=self.data_preprocessing_config.train_file_path,
-                                                                      test_metadata_path=self.data_preprocessing_config.test_file_path)
+                                                                      test_metadata_path=self.data_preprocessing_config.test_file_path,
+                                                                      class_mappings = mappings, 
+                                                                      transformation_object = self.audio_transformations(),
+                                                                      num_classes= len(mappings)
+                                                                      )
             return data_preprocessing_artifacts
         except Exception as e:
             raise CustomException(e, sys)

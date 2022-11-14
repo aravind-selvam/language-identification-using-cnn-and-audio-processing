@@ -3,3 +3,7 @@ from-root
 PyYAML
 numpy
 dill
+pandas
+scikit-learn
+torch
+torchaudio

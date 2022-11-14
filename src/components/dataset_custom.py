@@ -1,9 +1,7 @@
 import pandas as pd
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torchaudio
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 from torchsummary import summary
 
 from src.entity.artifact_entity import DataPreprocessingArtifacts
@@ -14,12 +12,12 @@ from src.logger import logging
 class IndianLanguageDataset(Dataset):
     try: 
         def __init__(self, dataset_config: CustomDatasetConfig, transformations: transformations,
-                    preprocessing_artifacts: DataPreprocessingArtifacts, validation_file: False):
+                    preprocessing_artifacts: DataPreprocessingArtifacts, validation: False):
 
             self.dataset_config = dataset_config
             self.transformations = transformations
             self.preprocessing_artifacts = preprocessing_artifacts
-            if validation_file:
+            if validation:
                 self.annotations = pd.read_csv(self.preprocessing_artifacts.test_metadata_path)
             else:
                 self.annotations = pd.read_csv(self.preprocessing_artifacts.train_metadata_path)

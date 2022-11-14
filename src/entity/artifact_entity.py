@@ -11,8 +11,9 @@ class DataPreprocessingArtifacts:
     train_metadata_path: str
     test_metadata_path: str
     class_mappings: dict
+    transformation_object: object
+    num_classes: int
 
 @dataclass
-class CustomDatasetArtifacts:
-    summary_text_file_path: str
-    meal_spectrogram: object
+class ModelTrainerArtifacts:
+    trained_model_path: str
