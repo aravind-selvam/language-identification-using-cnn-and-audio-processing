@@ -6,6 +6,7 @@ from src.entity.artifact_entity import DataIngestionArtifacts
 from src.entity.config_entity import DataPreprocessingConfig
 from src.exceptions import CustomException
 from src.logger import logging
+from src.constants import FFT_SIZE,HOP_LENGTH,N_MELS
 
 
 class DataPreprocessing:
@@ -55,6 +56,14 @@ class DataPreprocessing:
 
         except Exception as e:
             raise CustomException(e, sys)
+    
+    def audio_transformations(self) -> MelSpectrogram:
+        mel_spectrogram = torchaudio.transforms.Mealspectrogram(
+        sample_rate= self.data_preprocessing_config.sample_rate,
+        n_fft= FFT_SIZE,
+        hop_length=HOP_LENGTH,
+        n_mels=N_MELS
+        ) 
 
     def initiate_data_preprocessing(self) -> DataPreprocessingArtifacts:
         try:

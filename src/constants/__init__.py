@@ -28,3 +28,10 @@ DATA_PREPROCESSING_TRAIN_DIR: str = "train"
 DATA_PREPROCESSING_TEST_DIR: str = "test"
 DATA_PREPROCESSING_TRAIN_TEST_SPLIT_RATION: float = 0.3
 
+# constants related to data transformations
+EXTRACTED_FOLDER_NAME: str = "language-audio-data"
+SAMPLE_RATE: int = 4000
+NUM_SAMPLES: int = 20000
+FFT_SIZE: int = 1024
+HOP_LENGTH: int = 512
+N_MELS: int = 64

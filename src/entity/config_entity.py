@@ -31,3 +31,10 @@ class DataPreprocessingConfig:
     data_preprocessing_artifacts_dir: str = os.path.join(from_root(), training_pipeline_config.artifact_dir, DATA_PREPROCESSING_ARTIFACTS_DIR)
     train_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TRAIN_DIR, TRAIN_FILE_NAME)
     test_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR, TEST_FILE_NAME)
+    sample_rate: int = SAMPLE_RATE
+
+@dataclass
+class CustomDatasetConfig:
+    audio_dir: str = os.path.join(from_root(), DATA_DIR_NAME, EXTRACTED_DATA_DIR, EXTRACTED_FOLDER_NAME)
+    sample_rate: int = SAMPLE_RATE
+    num_samples: int = NUM_SAMPLES
