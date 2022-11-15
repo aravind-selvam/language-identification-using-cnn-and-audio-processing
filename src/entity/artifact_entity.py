@@ -17,3 +17,17 @@ class DataPreprocessingArtifacts:
 @dataclass
 class ModelTrainerArtifacts:
     trained_model_path: str
+    model_accuracy: float
+
+@dataclass
+class ModelEvaluationArtifacts:
+    trained_model_accuracy: float
+    is_model_accepted: bool
+    s3_model_accuracy: float
+    trained_model_path: str
+    s3_model_path: str
+
+@dataclass
+class ModelPusherArtifacts:
+    response: dict
+

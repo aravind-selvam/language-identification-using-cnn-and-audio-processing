@@ -38,10 +38,20 @@ N_MELS: int = 64
 
 # constants related to model training
 MODEL_TRAINING_ARTIFACTS_DIR: str = "model_training_artifacts"
-TRAINED_MODEL_NAME = 'model.pth'
+TRAINED_MODEL_NAME = 'model.pt'
 LEARNING_RATE = 0.001
 EPOCHS = 2
 BATCH_SIZE = 32
-NUM_WORKERS = 4
+NUM_WORKERS = 0
 STEP_SIZE = 6
 GAMMA = 0.5
+
+# constants related to model evaluation
+S3_BUCKET_MODEL_URI: str = "s3://spoken-language-data/model/"
+MODEL_EVALUATION_DIR: str = "model_evaluation"
+S3_MODEL_DIR_NAME: str = "s3_model"
+IN_CHANNELS: int = 1
+BASE_ACCURACY: float = 0.6
+
+# constants related to model pusher
+MODEL_PUSHER_DIR: str = "model_pusher"

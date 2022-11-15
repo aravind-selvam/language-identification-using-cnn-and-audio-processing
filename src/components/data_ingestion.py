@@ -39,7 +39,7 @@ class DataIngestion:
         except Exception as e:
             raise CustomException(e, sys)
 
-    def unzip_data(self) -> None:
+    def unzip_data(self) -> Path:
         try:
             logging.info(
                 "Unzipping the downloaded zip file from download directory...")
@@ -56,6 +56,7 @@ class DataIngestion:
                     zip_file_ref.extractall(extract_dir_path)
             logging.info(
                 f"Unzipped file exists in unzip directory: {extract_dir_path}.")
+            return unzip_data_path
         except Exception as e:
             raise CustomException(e, sys)
 
@@ -82,10 +83,10 @@ class DataIngestion:
         logging.info("Starting data ingestion component...")
         try:
             self.get_data_from_cloud()
-            self.unzip_data()
+            unzip_data_path = self.unzip_data()
             self.rename_files()
             data_ingestion_artifacts = DataIngestionArtifacts(downloaded_data_path=self.data_ingestion_config.download_dir,
-                                                             extracted_data_path=self.data_ingestion_config.unzip_data_dir_path)
+                                                             extracted_data_path=unzip_data_path)
             logging.info("Data ingestion completed successfully... \
                         Note: If data is not downloaded try deleting the data folder and try again.")
             return data_ingestion_artifacts

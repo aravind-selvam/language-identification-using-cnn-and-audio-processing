@@ -2,6 +2,7 @@ from src.logger import logging
 from src.exceptions import CustomException
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
 
 class ImageClassificationBase(nn.Module):
     def training_step(self, batch):

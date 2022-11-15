@@ -55,4 +55,18 @@ class ModelTrainerConfig:
     num_workers: int = NUM_WORKERS
     stepsize: int = STEP_SIZE
     gamma: float = GAMMA
+
+@dataclass
+class ModelEvaluationConfig:
+    s3_model_path: str = S3_BUCKET_MODEL_URI
+    model_evaluation_artifacts_dir: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_EVALUATION_DIR)
+    best_model_dir: str = os.path.join(model_evaluation_artifacts_dir, S3_MODEL_DIR_NAME)
+    in_channels: int = IN_CHANNELS
+    base_accuracy: float = BASE_ACCURACY
+
+@dataclass
+class ModelPusherConfig:
+    s3_model_path: str = S3_BUCKET_MODEL_URI
+    model_pusher_artifacts_dir: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_PUSHER_DIR)
+
     

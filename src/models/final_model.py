@@ -1,6 +1,7 @@
 from src.logger import logging
 from src.exceptions import CustomException
-from src.components.model_base import ImageClassificationBase
+from src.models.base_model import ImageClassificationBase
+import torch.nn as nn
 
 class CNNNetwork(ImageClassificationBase):
     def __init__(self, in_channels, num_classes):

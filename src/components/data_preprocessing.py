@@ -11,6 +11,7 @@ from src.constants import FFT_SIZE,HOP_LENGTH,N_MELS
 from pandas import DataFrame
 from torchaudio.transforms import MelSpectrogram
 import torchaudio
+from typing import Union
 
 
 class DataPreprocessing:
@@ -24,7 +25,7 @@ class DataPreprocessing:
         except Exception as e:
             raise CustomException(e, sys)
 
-    def get_meta_data(self) -> (pd.DataFrame, dict):
+    def get_meta_data(self) -> Union[pd.DataFrame, dict]:
         try:
             audio_dir = self.data_ingestion_artifacts.extracted_data_path
             metadata = {}

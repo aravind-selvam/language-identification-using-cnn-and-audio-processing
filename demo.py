@@ -1,11 +1,35 @@
 from src.components.data_ingestion import DataIngestion
 from src.entity.config_entity import DataIngestionConfig, DataPreprocessingConfig
 from src.components.data_preprocessing import DataPreprocessing
+from src.components.model_trainer import ModelTrainer
+from src.entity.config_entity import *
+from src.components.dataset_custom import IndianLanguageDataset
+from src.models.final_model import CNNNetwork
+import torch
 
 di = DataIngestion(data_ingestion_config=DataIngestionConfig)
 data_ingestion_artifacts = di.initiate_data_ingestion()
+print(data_ingestion_artifacts.extracted_data_path)
 dp = DataPreprocessing(data_preprocessing_config=DataPreprocessingConfig, data_ingestion_artifacts=data_ingestion_artifacts)
 data_preprocessing_artifacts = dp.initiate_data_preprocessing()
-print(data_preprocessing_artifacts)
 
-# D:\iNeuron\Project_Neuron\language_recognition\language-detection-using-cnn-pytroch\data\download_data\language-audio-data.zip
+
+
+train_data = IndianLanguageDataset(dataset_config=CustomDatasetConfig, 
+                                    transformations=data_preprocessing_artifacts.transformation_object,
+                                    validation=False, 
+                                    preprocessing_artifacts=data_preprocessing_artifacts)
+
+val_data = IndianLanguageDataset(dataset_config=CustomDatasetConfig, 
+                                    transformations=data_preprocessing_artifacts.transformation_object,
+                                    validation=True, 
+                                    preprocessing_artifacts=data_preprocessing_artifacts)
+
+
+model = CNNNetwork(in_channels=1, num_classes=data_preprocessing_artifacts.num_classes)
+
+mt = ModelTrainer(modeltrainer_config=ModelTrainerConfig, data_preprocessing_artifacts = data_preprocessing_artifacts,
+train_data=train_data , test_data=val_data, model=model, optimizer_func=torch.optim.Adam)
+print(mt.device)
+model_trainer_artifacts = mt.initiate_model_trainer()
+print(model_trainer_artifacts)

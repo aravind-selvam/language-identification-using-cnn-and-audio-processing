@@ -1,17 +1,18 @@
 import pandas as pd
 import torch
 import torchaudio
+from torchaudio.transforms import MelSpectrogram
 from torch.utils.data import Dataset
-from torchsummary import summary
 
 from src.entity.artifact_entity import DataPreprocessingArtifacts
 from src.entity.config_entity import CustomDatasetConfig
 from src.exceptions import CustomException
 from src.logger import logging
+import os, sys
 
 class IndianLanguageDataset(Dataset):
     try: 
-        def __init__(self, dataset_config: CustomDatasetConfig, transformations: transformations,
+        def __init__(self, dataset_config: CustomDatasetConfig, transformations: MelSpectrogram,
                     preprocessing_artifacts: DataPreprocessingArtifacts, validation: False):
 
             self.dataset_config = dataset_config
@@ -36,7 +37,7 @@ class IndianLanguageDataset(Dataset):
             signal = self._mix_down_if_necessary(signal)
             signal = self._cut_if_necessary(signal)
             signal = self._right_pad_if_necessary(signal)
-            signal = self.transformation(signal)
+            signal = self.transformations(signal)
             return signal, label
         
         def _get_audio_sample_path(self, idx):
