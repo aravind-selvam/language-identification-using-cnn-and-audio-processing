@@ -4,7 +4,6 @@ from zipfile import Path, ZipFile
 from src.logger import logging
 from src.entity.config_entity import DataIngestionConfig
 from src.entity.artifact_entity import DataIngestionArtifacts
-from src.utils import read_yaml_file
 from src.exceptions import CustomException
 from src.cloud_storage.s3_operations import S3Sync
 from src.constants import S3_BUCKET_URI, UNZIPPED_FOLDER_NAME
@@ -16,7 +15,6 @@ class DataIngestion:
     def __init__(self, data_ingestion_config: DataIngestionConfig):
         try:
             self.data_ingestion_config = data_ingestion_config
-            # self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
             self.s3_sync = S3Sync()
         except Exception as e:
             raise CustomException(e, sys)

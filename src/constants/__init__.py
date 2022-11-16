@@ -41,7 +41,7 @@ MODEL_TRAINING_ARTIFACTS_DIR: str = "model_training_artifacts"
 TRAINED_MODEL_NAME = 'model.pt'
 LEARNING_RATE = 0.001
 EPOCHS = 1
-BATCH_SIZE = 64
+BATCH_SIZE = 128
 NUM_WORKERS = 0
 STEP_SIZE = 6
 GAMMA = 0.5
@@ -59,4 +59,4 @@ MODEL_PUSHER_DIR: str = "model_pusher"
 # constants related to prediction
 PREDICTION_PIPELINE_DIR_NAME = "prediction_pipeline"
 PREDICTION_MODEL_DIR_NAME = "prediction_model"
-APPLICATION_ARTIFACTS_DIR = 'prediction_artifacts'
+APPLICATION_ARTIFACTS_DIR = 'front-end-application-artifacts'

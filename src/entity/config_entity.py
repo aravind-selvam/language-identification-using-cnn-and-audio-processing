@@ -18,19 +18,12 @@ class TrainingPipelineConfig:
 training_pipeline_config: TrainingPipelineConfig = TrainingPipelineConfig()
 
 @dataclass
-class PredictionPipelineConfig:
-    s3_model_path: str = S3_BUCKET_MODEL_URI
-    pred_artifact_dir = os.path.join(from_root(), PREDICTION_PIPELINE_DIR_NAME)
-    
-
-@dataclass
 class DataIngestionConfig:
     bucket_name: str = BUCKET_NAME
     zip_file_name: str = ZIP_FILE_NAME
     download_dir: str = os.path.join(from_root(), DATA_DIR_NAME, DOWNLOAD_DIR)
     zip_file_path: str = os.path.join(from_root(), download_dir, ZIP_FILE_NAME)
     unzip_data_dir_path: str = os.path.join(from_root(), DATA_DIR_NAME, EXTRACTED_DATA_DIR)
-
 
 @dataclass
 class DataPreprocessingConfig:
@@ -43,13 +36,11 @@ class DataPreprocessingConfig:
     test_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR, TEST_FILE_NAME)
     sample_rate: int = SAMPLE_RATE
 
-
 @dataclass
 class CustomDatasetConfig:
     audio_dir: str = os.path.join(from_root(), DATA_DIR_NAME, EXTRACTED_DATA_DIR, UNZIPPED_FOLDER_NAME)
     sample_rate: int = SAMPLE_RATE
     num_samples: int = NUM_SAMPLES
-
 
 @dataclass
 class ModelTrainerConfig:
@@ -75,4 +66,11 @@ class ModelPusherConfig:
     s3_model_path: str = S3_BUCKET_MODEL_URI
     model_pusher_artifacts_dir: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_PUSHER_DIR)
 
+@dataclass
+class PredictionPipelineConfig:
+    s3_model_path: str = S3_BUCKET_MODEL_URI
+    prediction_artifact_dir = os.path.join(from_root(), PREDICTION_PIPELINE_DIR_NAME)
+    model_download_path = os.path.join(prediction_artifact_dir, PREDICTION_MODEL_DIR_NAME)
+    app_artifacts = os.path.join(prediction_artifact_dir, APPLICATION_ARTIFACTS_DIR)
+    input_sounds_path = os.path.join(app_artifacts, 'inputSound' + TIMESTAMP + '.mp3') 
     

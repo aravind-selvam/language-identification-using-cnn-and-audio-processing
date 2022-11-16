@@ -8,6 +8,7 @@ from src.models.final_model import CNNNetwork
 from src.utils.gpu_functions import to_device, get_default_device
 from src.exceptions import CustomException
 from src.components.model_trainer import ModelTrainer
+import numpy as np
 
 
 class ModelEvaluation:
@@ -19,14 +20,9 @@ class ModelEvaluation:
         self.trainer_artifacts = model_trainer_artifacts
     
     def get_best_model_path(self):
-        """
-        Method Name :   get_best_model
-        Description :   This function is used to get model in production
-        
-        Output      :   Returns model object if available in s3 storage
-        On Failure  :   Write an exception log and then raise an exception
-        """
         try:
+            model_evaluation_artifacts_dir = self.model_evaluation_config.model_evaluation_artifacts_dir
+            os.makedirs(model_evaluation_artifacts_dir, exist_ok=True)
             model_path = self.model_evaluation_config.s3_model_path
             best_model_dir = self.model_evaluation_config.best_model_dir
             s3_sync = S3Sync()
@@ -69,7 +65,7 @@ class ModelEvaluation:
     def initiate_evaluation(self):
         s3_model_accuracy, s3_model_loss = self.evaluate_model()
         tmp_best_model_accuracy = 0 if s3_model_accuracy is None else s3_model_accuracy
-        tmp_best_model_loss = 0 if s3_model_loss is None else s3_model_loss
+        tmp_best_model_loss = np.inf if s3_model_loss is None else s3_model_loss
         trained_model_accuracy = self.trainer_artifacts.model_accuracy
         trained_model_loss = self.trainer_artifacts.model_loss
         evaluation_response = trained_model_accuracy > tmp_best_model_accuracy and tmp_best_model_loss > trained_model_loss
@@ -77,8 +73,8 @@ class ModelEvaluation:
                                                             s3_model_accuracy = s3_model_accuracy,
                                                             is_model_accepted = evaluation_response,
                                                             trained_model_path = self.trainer_artifacts.trained_model_path,
-                                                            s3_model_path = self.get_best_model_path
+                                                            s3_model_path = self.model_evaluation_config.s3_model_path
                                                             )
-        logging.info(f"Model evaludation completed! Artifacts: {model_evaluation_artifacts}")
+        logging.info(f"Model evaluation completed! Artifacts: {model_evaluation_artifacts}")
         return model_evaluation_artifacts
     

@@ -12,8 +12,7 @@ from src.models.final_model import CNNNetwork
 
 
 class LanguageData:
-    def __init__(self, audio_data_path: str):
-        self.audio_data_path = audio_data_path
+    def __init__(self):
         self.dataset_config = CustomDatasetConfig()
         self.transformation = DataPreprocessingArtifacts().transformation_object
     
@@ -43,8 +42,8 @@ class LanguageData:
             signal = torch.mean(signal, dim = 0, keepdim=True)
         return signal
     
-    def load_data(self):
-        signal, sr = torchaudio.load(self.audio_data_path)
+    def load_data(self, audio_data_path):
+        signal, sr = torchaudio.load(audio_data_path)
         signal = self._resample_if_necessary(signal, sr)
         signal = self._mix_down_if_necessary(signal)
         signal = self._cut_if_necessary(signal)
@@ -61,8 +60,7 @@ class SinglePrediction:
 
     def _get_model_in_production(self):
         s3_model_path = self.prediction_pipeline_config.s3_model_path
-        prediction_artifacts_path = self.prediction_pipeline_config.pred_artifact_dir
-        model_download_path = os.path.join(prediction_artifacts_path, PREDICTION_MODEL_DIR_NAME)
+        model_download_path = self.prediction_pipeline_config.model_download_path
         s3_sync = S3Sync()
         s3_sync.sync_folder_from_s3(folder=model_download_path, aws_bucket_url=s3_model_path)
         for file in os.listdir(model_download_path):

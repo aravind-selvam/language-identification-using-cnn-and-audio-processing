@@ -104,7 +104,6 @@ class ModelTrainer:
             logging.info("Starting model trainer component...")
 
             train_loader, val_loader = self.get_dataloader()
-            print(train_loader, val_loader)
             # use the wrapper class to load the data to device
             train_dataloader = DeviceDataLoader(train_loader, self.device)
             test_dataloader = DeviceDataLoader(val_loader, self.device)

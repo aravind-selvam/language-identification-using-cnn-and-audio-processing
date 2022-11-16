@@ -22,6 +22,7 @@ class ModelPusher:
                 response = {"is model pushed": True, "S3_model": s3_model_folder_path + "/" + str(TRAINED_MODEL_NAME),"message" : message}
                 logging.info(response)
             else:
+                s3_model_folder_path = self.model_evaluation_artifacts.s3_model_path
                 message = "Current Trained Model is not accepted as model in Production has better accuracy"
                 response = {"is model pushed": False, "S3_model":s3_model_folder_path,"message" : message}
                 logging.info(response)
