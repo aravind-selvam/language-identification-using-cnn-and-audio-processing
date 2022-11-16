@@ -20,7 +20,8 @@ training_pipeline_config: TrainingPipelineConfig = TrainingPipelineConfig()
 @dataclass
 class PredictionPipelineConfig:
     s3_model_path: str = S3_BUCKET_MODEL_URI
-    pred_artifact_dir = os.path.join(from_root(), training_pipeline_config.artifact_dir, PREDICTION_PIPELINE_DIR_NAME)
+    pred_artifact_dir = os.path.join(from_root(), PREDICTION_PIPELINE_DIR_NAME)
+    
 
 @dataclass
 class DataIngestionConfig:

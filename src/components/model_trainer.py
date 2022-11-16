@@ -7,6 +7,7 @@ from src.exceptions import CustomException
 from torch.optim.lr_scheduler import StepLR 
 from torch.utils.data import DataLoader
 from src.logger import logging
+from tqdm import tqdm
 import os, sys
 
 
@@ -55,15 +56,25 @@ class ModelTrainer:
                 # Training
                 print('Epoch:', epoch,'LR:', scheduler.get_lr())
                 train_losses = []
-                for batch in train_loader:
-                    optimizer.zero_grad()
+                loop = tqdm(enumerate(train_loader), total=len(train_loader), leave=False)
+                for batch_idx, batch in loop:
                     loss = self.model.training_step(batch)
                     train_losses.append(loss)
+                    
+                    # backward 
+                    optimizer.zero_grad()
                     loss.backward()
+
+                    # gradient descent
                     optimizer.step()
                     scheduler.step()
+
+                    # update progress bar
+                    loop.set_description(f"Epoch [{epoch}/{self.epochs}]")
+                    loop.set_postfix(loss = loss.item())
+                
                 # Validation
-                result = self.evaluate(self.model, val_loader)
+                result = self.evaluate(self.model, tqdm(val_loader))
                 result['train_loss'] = torch.stack(train_losses).mean().item()
                 self.model.epoch_end(epoch, result)
                 history.append(result)
@@ -107,7 +118,8 @@ class ModelTrainer:
                         "loss": history[0]['val_loss']}, trained_model_path)
                 
             model_trainer_artifacts = ModelTrainerArtifacts(trained_model_path=trained_model_path,
-                                                            model_accuracy=history[0]['val_acc'])
+                                                            model_accuracy=history[0]['val_acc'],
+                                                            model_loss=history[0]['val_loss'] )
             logging.info("Model Trainer class completed!!")
             return model_trainer_artifacts
         except Exception as e:

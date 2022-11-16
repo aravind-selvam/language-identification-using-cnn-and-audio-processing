@@ -34,6 +34,7 @@ class ModelEvaluation:
             model_path = self.model_evaluation_config.s3_model_path
             best_model_dir = self.model_evaluation_config.best_model_dir
             s3_sync = S3Sync()
+            best_model_path = None
             s3_sync.sync_folder_from_s3(folder=best_model_dir, aws_bucket_url=model_path)
             for file in os.listdir(best_model_dir):
                 if file.endswith(".pt"):
@@ -42,7 +43,6 @@ class ModelEvaluation:
                     break
                 else:
                     logging.info("Model is not available in best_model_directory")
-                    best_model_path = None
             return best_model_path
         except Exception as e:
             raise CustomException(e,sys)
@@ -59,29 +59,27 @@ class ModelEvaluation:
             model.eval()
             accuracy = state_dict[0]['val_acc']
             loss = state_dict[0]['val_loss']
-            model_trainer = ModelTrainer(modeltrainer_config=ModelTrainerConfig(),
-                                        data_preprocessing_artifacts=self.data_preprocessing_artifacts,
-                                        train_data=self.train_data, val_data=self.val_data,
-                                        model = model,
-                                        optimizer_func= self.optimizer)
-            _ , val_loader = model_trainer.get_dataloader()
-            result = model_trainer.evaluate(model, val_loader)
-            val_accuracy = result['val_acc']
-            logging.info(f"S3 Validation accuracy is {val_accuracy}")
+            logging.info(f"S3 Model Validation accuracy is {accuracy}")
+            logging.info(f"S3 Model Validation loss is {loss}")
             logging.info(f"Locally trained accuracy is {self.trainer_artifacts.model_accuracy}")
-            s3_model_accuracy = val_accuracy
+            s3_model_accuracy = accuracy
+            s3_model_loss = loss
         else:
             logging.info("Model is not found on production server, So couldn't evaluate")
             s3_model_accuracy = None
-        return s3_model_accuracy
+            s3_model_loss = None
+        return s3_model_accuracy, s3_model_loss
         
     def initiate_evaluation(self):
-        s3_model_accuracy = self.evaluate_model()
+        s3_model_accuracy, s3_model_loss = self.evaluate_model()
         tmp_best_model_accuracy = 0 if s3_model_accuracy is None else s3_model_accuracy
+        tmp_best_model_loss = 0 if s3_model_loss is None else s3_model_loss
         trained_model_accuracy = self.trainer_artifacts.model_accuracy
+        trained_model_loss = self.trainer_artifacts.model_loss
+        evaluation_response = trained_model_accuracy > tmp_best_model_accuracy and tmp_best_model_loss > trained_model_loss
         model_evaluation_artifacts = ModelEvaluationArtifacts(trained_model_accuracy = trained_model_accuracy,
                                                             s3_model_accuracy = s3_model_accuracy,
-                                                            is_model_accepted = trained_model_accuracy > tmp_best_model_accuracy,
+                                                            is_model_accepted = evaluation_response,
                                                             trained_model_path = self.trainer_artifacts.trained_model_path,
                                                             s3_model_path = self.get_best_model_path
                                                             )
