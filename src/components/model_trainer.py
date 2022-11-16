@@ -103,10 +103,11 @@ class ModelTrainer:
             trained_model_path = self.model_trainer_config.trained_model_dir
             os.makedirs(self.model_trainer_config.model_trainer_artifacts_dir, exist_ok=True)
             torch.save({"model_state_dict":self.model.state_dict(),
-                        "accuracy":max(history['val_acc'])},self.trained_model_path)
+                        "accuracy":history[0]['val_acc'], 
+                        "loss": history[0]['val_loss']}, trained_model_path)
                 
             model_trainer_artifacts = ModelTrainerArtifacts(trained_model_path=trained_model_path,
-                                                            model_accuracy=history['val_acc'])
+                                                            model_accuracy=history[0]['val_acc'])
             logging.info("Model Trainer class completed!!")
             return model_trainer_artifacts
         except Exception as e:

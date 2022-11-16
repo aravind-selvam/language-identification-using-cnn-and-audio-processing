@@ -18,6 +18,11 @@ class TrainingPipelineConfig:
 training_pipeline_config: TrainingPipelineConfig = TrainingPipelineConfig()
 
 @dataclass
+class PredictionPipelineConfig:
+    s3_model_path: str = S3_BUCKET_MODEL_URI
+    pred_artifact_dir = os.path.join(from_root(), training_pipeline_config.artifact_dir, PREDICTION_PIPELINE_DIR_NAME)
+
+@dataclass
 class DataIngestionConfig:
     bucket_name: str = BUCKET_NAME
     zip_file_name: str = ZIP_FILE_NAME

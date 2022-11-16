@@ -31,7 +31,6 @@ class DataIngestion:
                     f"Data is already present in {download_dir}, So skipping download step.")
                 return None
             else:
-                os.makedirs(download_dir, exist_ok=True)
                 self.s3_sync.sync_folder_from_s3(
                     folder=download_dir, aws_bucket_url=S3_BUCKET_URI)
                 logging.info(

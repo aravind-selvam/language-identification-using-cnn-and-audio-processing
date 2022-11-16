@@ -40,7 +40,7 @@ N_MELS: int = 64
 MODEL_TRAINING_ARTIFACTS_DIR: str = "model_training_artifacts"
 TRAINED_MODEL_NAME = 'model.pt'
 LEARNING_RATE = 0.001
-EPOCHS = 2
+EPOCHS = 1
 BATCH_SIZE = 32
 NUM_WORKERS = 0
 STEP_SIZE = 6
@@ -55,3 +55,7 @@ BASE_ACCURACY: float = 0.6
 
 # constants related to model pusher
 MODEL_PUSHER_DIR: str = "model_pusher"
+
+# constants related to prediction
+PREDICTION_PIPELINE_DIR_NAME = "prediction_pipeline"
+PREDICTION_MODEL_DIR_NAME = "prediction_model"

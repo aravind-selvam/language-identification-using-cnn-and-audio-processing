@@ -36,7 +36,7 @@ class ModelEvaluation:
             s3_sync = S3Sync()
             s3_sync.sync_folder_from_s3(folder=best_model_dir, aws_bucket_url=model_path)
             for file in os.listdir(best_model_dir):
-                if file.endswith(".pth"):
+                if file.endswith(".pt"):
                     best_model_path = os.path.join(best_model_dir, file)
                     logging.info(f"Best model found in {best_model_path}")
                     break
@@ -50,13 +50,15 @@ class ModelEvaluation:
     def evaluate_model(self):
         best_model_path = self.get_best_model_path()
         if best_model_path is not None:
-            device = get_default_device()
             in_channels = self.model_evaluation_config.in_channels
             num_classes = self.data_preprocessing_artifacts.num_classes
-            model = to_device(CNNNetwork(in_channels, num_classes), device)
+            model = CNNNetwork(in_channels, num_classes)
             # load back the model
             state_dict = torch.load(best_model_path)
-            model = model.load_state_dict(state_dict)
+            model = model.load_state_dict(state_dict[0]['model_state_dict'])
+            model.eval()
+            accuracy = state_dict[0]['val_acc']
+            loss = state_dict[0]['val_loss']
             model_trainer = ModelTrainer(modeltrainer_config=ModelTrainerConfig(),
                                         data_preprocessing_artifacts=self.data_preprocessing_artifacts,
                                         train_data=self.train_data, val_data=self.val_data,
