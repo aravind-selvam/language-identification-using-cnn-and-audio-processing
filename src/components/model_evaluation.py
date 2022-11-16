@@ -13,11 +13,7 @@ from src.components.model_trainer import ModelTrainer
 class ModelEvaluation:
     def __init__(self, data_preprocessing_artifacts: DataPreprocessingArtifacts, 
                 model_evaluation_config: ModelEvaluationConfig,
-                model_trainer_artifacts: ModelTrainerArtifacts,
-                optimizer, train_data, val_data):
-        self.train_data = train_data
-        self.val_data = val_data
-        self.optimizer = optimizer
+                model_trainer_artifacts: ModelTrainerArtifacts):
         self.data_preprocessing_artifacts = data_preprocessing_artifacts
         self.model_evaluation_config = model_evaluation_config
         self.trainer_artifacts = model_trainer_artifacts
