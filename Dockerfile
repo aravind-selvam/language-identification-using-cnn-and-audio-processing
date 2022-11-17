@@ -1,6 +1,8 @@
-FROM continuumio/miniconda
+FROM python:3.10-slim
 
-RUN apt update -y && apt install awscli -y
+RUN apt update -y
+
+RUN pip3 --no-cache-dir install --upgrade awscli
 
 WORKDIR /app
 
