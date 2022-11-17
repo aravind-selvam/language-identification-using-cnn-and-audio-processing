@@ -54,7 +54,7 @@ class ModelTrainer:
                                )
             for epoch in range(1, self.epochs + 1):
                 # Training
-                print('Epoch:', epoch,'LR:', scheduler.get_lr())
+                print('Epoch:', epoch,'LR:', scheduler.get_last_lr())
                 train_losses = []
                 loop = tqdm(enumerate(train_loader), total=len(train_loader), leave=False)
                 for batch_idx, batch in loop:
@@ -111,12 +111,13 @@ class ModelTrainer:
             # training the model for defined epochs
             history = self.fit(train_dataloader, test_dataloader)
             trained_model_path = self.model_trainer_config.trained_model_dir
-            os.makedirs(self.model_trainer_config.model_trainer_artifacts_dir, exist_ok=True)
+            trained_model_dir = self.model_trainer_config.model_trainer_artifacts_dir
+            os.makedirs(trained_model_dir, exist_ok=True)
             torch.save({"model_state_dict":self.model.state_dict(),
                         "accuracy":history[0]['val_acc'], 
                         "loss": history[0]['val_loss']}, trained_model_path)
                 
-            model_trainer_artifacts = ModelTrainerArtifacts(trained_model_path=trained_model_path,
+            model_trainer_artifacts = ModelTrainerArtifacts(trained_model_path=trained_model_dir,
                                                             model_accuracy=history[0]['val_acc'],
                                                             model_loss=history[0]['val_loss'] )
             logging.info("Model Trainer class completed!!")

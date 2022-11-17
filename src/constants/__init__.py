@@ -28,6 +28,10 @@ DATA_PREPROCESSING_ARTIFACTS_DIR: str = "data_preprocessing_artifacts"
 DATA_PREPROCESSING_TRAIN_DIR: str = "train"
 DATA_PREPROCESSING_TEST_DIR: str = "test"
 DATA_PREPROCESSING_TRAIN_TEST_SPLIT_RATION: float = 0.3
+OTHER_ARTIFACTS = 'transformation'
+TRANSFORMATION_OBJECT_NAME = 'mel_spectrogram.pkl'
+CLASS_MAPPINGS_DIR_NAME = 'class_mappings'
+CLASS_MAPPINGS_OBJECT_NAME = 'class_mappings.pkl'
 
 # constants related to data transformations
 SAMPLE_RATE: int = 4000
@@ -57,6 +61,8 @@ BASE_ACCURACY: float = 0.6
 MODEL_PUSHER_DIR: str = "model_pusher"
 
 # constants related to prediction
-PREDICTION_PIPELINE_DIR_NAME = "prediction_pipeline"
+S3_ARTIFACTS_URI: str = "s3://spoken-language-data/transformation/"
+PREDICTION_PIPELINE_DIR_NAME = "prediction_artifacts"
 PREDICTION_MODEL_DIR_NAME = "prediction_model"
-APPLICATION_ARTIFACTS_DIR = 'front-end-application-artifacts'
+APPLICATION_ARTIFACTS_DIR = 'user_inputs'
+NUM_CLASSES = 4

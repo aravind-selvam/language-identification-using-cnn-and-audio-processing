@@ -12,6 +12,9 @@ from pandas import DataFrame
 from torchaudio.transforms import MelSpectrogram
 import torchaudio
 from typing import Union
+from src.utils import save_object
+from src.cloud_storage.s3_operations import S3Sync
+from src.constants import S3_ARTIFACTS_URI
 
 
 class DataPreprocessing:
@@ -45,6 +48,8 @@ class DataPreprocessing:
             metadata_path = self.data_preprocessing_config.metadata_path
             metadata.to_csv(metadata_path, index=False)
             le_name_mapping = dict(zip(le.classes_, le.transform(le.classes_)))
+            class_mapping_object_path = self.data_preprocessing_config.class_mappings_object_path
+            save_object(file_path=class_mapping_object_path, obj=le_name_mapping)
 
             return metadata, le_name_mapping
         except Exception as e:
@@ -79,10 +84,16 @@ class DataPreprocessing:
         hop_length= HOP_LENGTH,
         n_mels= N_MELS
         )
+        transformation_object_path = self.data_preprocessing_config.transformations_object_path
+        save_object(file_path=transformation_object_path, obj=mel_spectrogram)
+
         return mel_spectrogram
 
     def initiate_data_preprocessing(self) -> DataPreprocessingArtifacts:
         try:
+            s3_sync = S3Sync()
+            other_artifacts_dir = self.data_preprocessing_config.transformations_dir
+            s3_sync.sync_folder_to_s3(folder=other_artifacts_dir, aws_bucket_url=S3_ARTIFACTS_URI)
             metadata, mappings = self.get_meta_data()
             self.train_test_split(metadata)
             data_preprocessing_artifacts = DataPreprocessingArtifacts(train_metadata_path=self.data_preprocessing_config.train_file_path,

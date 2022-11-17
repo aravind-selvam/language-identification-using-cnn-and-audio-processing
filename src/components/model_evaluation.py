@@ -5,9 +5,7 @@ from src.entity.artifact_entity import DataPreprocessingArtifacts, ModelTrainerA
 from src.cloud_storage.s3_operations import S3Sync
 from src.logger import logging
 from src.models.final_model import CNNNetwork
-from src.utils.gpu_functions import to_device, get_default_device
 from src.exceptions import CustomException
-from src.components.model_trainer import ModelTrainer
 import numpy as np
 
 
@@ -46,11 +44,11 @@ class ModelEvaluation:
             num_classes = self.data_preprocessing_artifacts.num_classes
             model = CNNNetwork(in_channels, num_classes)
             # load back the model
-            state_dict = torch.load(best_model_path)
-            model = model.load_state_dict(state_dict[0]['model_state_dict'])
+            state_dict = torch.load(best_model_path, map_location='cpu')
+            model.load_state_dict(state_dict['model_state_dict'])
             model.eval()
-            accuracy = state_dict[0]['val_acc']
-            loss = state_dict[0]['val_loss']
+            accuracy = state_dict['accuracy']
+            loss = state_dict['loss']
             logging.info(f"S3 Model Validation accuracy is {accuracy}")
             logging.info(f"S3 Model Validation loss is {loss}")
             logging.info(f"Locally trained accuracy is {self.trainer_artifacts.model_accuracy}")

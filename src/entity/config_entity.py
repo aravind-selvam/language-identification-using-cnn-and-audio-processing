@@ -34,6 +34,9 @@ class DataPreprocessingConfig:
     train_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TRAIN_DIR, TRAIN_FILE_NAME)
     test_dir_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR)
     test_file_path: str = os.path.join(data_preprocessing_artifacts_dir, DATA_PREPROCESSING_TEST_DIR, TEST_FILE_NAME)
+    transformations_dir: str = os.path.join(data_preprocessing_artifacts_dir, OTHER_ARTIFACTS)
+    transformations_object_path = os.path.join(data_preprocessing_artifacts_dir, transformations_dir, TRANSFORMATION_OBJECT_NAME)
+    class_mappings_object_path = os.path.join(data_preprocessing_artifacts_dir, transformations_dir, CLASS_MAPPINGS_OBJECT_NAME)
     sample_rate: int = SAMPLE_RATE
 
 @dataclass

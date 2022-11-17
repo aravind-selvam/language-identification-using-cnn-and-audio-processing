@@ -5,26 +5,38 @@ from from_root import from_root
 from src.pipe.prediction_pipeline import LanguageData, SinglePrediction
 from src.entity.config_entity import PredictionPipelineConfig
 from src.utils import decodesound
+from src.pipe.training_pipeline import TrainingPipeline
 
 app = Flask(__name__)
 CORS(app)
 
-prediction_config = PredictionPipelineConfig()
-predictor = SinglePrediction()
+predictor = SinglePrediction(PredictionPipelineConfig())
 
 @app.route('/', methods=['GET'])
 @cross_origin()
 def home():
     return render_template('index.html')
 
+@app.route("/train", methods=['GET'])
+@cross_origin()
+def train():
+    train_pipeline = TrainingPipeline()
+
+    train_pipeline.run_pipeline()
+
+    return jsonify(train_pipeline.get_result())
+
 @app.route('/predict', methods=['POST'])
 @cross_origin()
 def predictroute():
-    input_file_path = prediction_config.input_sounds_path
+    config = PredictionPipelineConfig()
+    input_sounds_path = config.input_sounds_path
+    app_artifacts = config.app_artifacts
+    os.makedirs(app_artifacts, exist_ok=True)
     if request.method == 'POST':
         base_64 = request.json['sound']
-        decodesound(base_64, input_file_path)
-        signal = LanguageData().load_data(input_file_path)
+        decodesound(base_64, input_sounds_path)
+        signal = LanguageData().load_data(input_sounds_path)
         result = predictor.predict_language(input_signal=signal)
         return jsonify({"Result" : result})
 

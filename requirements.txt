@@ -9,3 +9,5 @@ torch
 torchaudio
 soundfile
 tqdm
+flask
+flask_cors
