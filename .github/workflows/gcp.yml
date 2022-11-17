@@ -33,7 +33,7 @@ jobs:
       REPOSITORY: language-identification-docker-repo
       IMAGE_NAME: language-identification-docker-image
       IMAGE_TAG: latest
-      PROJECT_ID: our-velocity-363109
+      PROJECT_ID: project-neuron-368805
       GAR_LOCATION: asia-south1
    
     steps:
@@ -69,7 +69,7 @@ jobs:
       REPOSITORY: language-identification-docker-repo
       IMAGE_NAME: language-identification-docker-image
       IMAGE_TAG: latest
-      PROJECT_ID: our-velocity-363109
+      PROJECT_ID: project-neuron-368805
       GAR_LOCATION: asia-south1
     steps:
       - name: Authenticate with Google Cloud
