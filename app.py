@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import os
 from flask_cors import CORS, cross_origin
-from from_root import from_root
 from src.pipe.prediction_pipeline import LanguageData, SinglePrediction
 from src.entity.config_entity import PredictionPipelineConfig
 from src.utils import decodesound
@@ -37,9 +36,9 @@ def predictroute():
         base_64 = request.json['sound']
         decodesound(base_64, input_sounds_path)
         signal = LanguageData().load_data(input_sounds_path)
+        signal.unsqueeze_(0)
         result = predictor.predict_language(input_signal=signal)
         return jsonify({"Result" : result})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
-        

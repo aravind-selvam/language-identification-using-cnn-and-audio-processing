@@ -91,17 +91,21 @@ class DataPreprocessing:
 
     def initiate_data_preprocessing(self) -> DataPreprocessingArtifacts:
         try:
-            s3_sync = S3Sync()
-            other_artifacts_dir = self.data_preprocessing_config.transformations_dir
-            s3_sync.sync_folder_to_s3(folder=other_artifacts_dir, aws_bucket_url=S3_ARTIFACTS_URI)
             metadata, mappings = self.get_meta_data()
             self.train_test_split(metadata)
+            transformation_object = self.audio_transformations()
             data_preprocessing_artifacts = DataPreprocessingArtifacts(train_metadata_path=self.data_preprocessing_config.train_file_path,
                                                                       test_metadata_path=self.data_preprocessing_config.test_file_path,
                                                                       class_mappings = mappings, 
-                                                                      transformation_object = self.audio_transformations(),
+                                                                      transformation_object = transformation_object,
                                                                       num_classes= len(mappings)
                                                                       )
+            s3_sync = S3Sync()
+            other_artifacts_dir = self.data_preprocessing_config.transformations_dir
+            logging.info("Sync transformation files to S3 transformation artifacts folder...") 
+            s3_sync.sync_folder_to_s3(folder=other_artifacts_dir, aws_bucket_url=S3_ARTIFACTS_URI)
+            logging.info("Finished Syncing files to S3 transformation artifacts folder")
+            
             return data_preprocessing_artifacts
         except Exception as e:
             raise CustomException(e, sys)
