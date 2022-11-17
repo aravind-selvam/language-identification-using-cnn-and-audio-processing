@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM continuumio/miniconda
 
 RUN apt update -y && apt install awscli -y
 
