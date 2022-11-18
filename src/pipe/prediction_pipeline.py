@@ -136,7 +136,7 @@ class SinglePrediction:
     def predict_language(self, input_signal):
         try: 
             prediction_model = self.get_model()
-            os.makedirs(os.path.dirname(self.prediction_pipeline_config.prediction_artifact_dir), exist_ok=True)
+            os.makedirs(self.prediction_pipeline_config.artifact_dir, exist_ok=True)
             download_path = self.prediction_pipeline_config.transformation_download_path
             os.makedirs(os.path.dirname(download_path), exist_ok=True)
             if len(os.listdir(download_path)) > 0:

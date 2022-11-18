@@ -72,6 +72,7 @@ class ModelPusherConfig:
 @dataclass
 class PredictionPipelineConfig:
     s3_model_path: str = S3_BUCKET_MODEL_URI
+    artifact_dir: str = ARTIFACTS_DIR
     prediction_artifact_dir = os.path.join(from_root(),ARTIFACTS_DIR, PREDICTION_PIPELINE_DIR_NAME)
     model_download_path = os.path.join(prediction_artifact_dir, PREDICTION_MODEL_DIR_NAME)
     transformation_download_path = os.path.join(prediction_artifact_dir, TRANSFORMATION_ARTIFACTS_DIR)
