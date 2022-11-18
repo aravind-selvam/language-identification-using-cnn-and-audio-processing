@@ -31,7 +31,7 @@ class ImageClassificationBase(nn.Module):
         """Takes a list of outputs and returns mean loss and mean accuracy"""
         batch_losses = [x['val_loss'] for x in outputs]
         # Combine losses and calculate mean loss
-        epoch_loss = torch.stack(batch_losses).mean()   
+        epoch_loss = torch.stack(batch_losses).mean()
         batch_accs = [x['val_acc'] for x in outputs]
         # Combine accuracies and calculate mean accuracy
         epoch_acc = torch.stack(batch_accs).mean()

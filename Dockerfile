@@ -10,4 +10,6 @@ COPY . /app
 
 RUN pip install -r requirements.txt
 
+RUN pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/cpu
+
 CMD ["python3", "app.py"]

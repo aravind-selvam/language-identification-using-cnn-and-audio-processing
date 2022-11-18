@@ -5,9 +5,9 @@ numpy
 dill
 pandas
 scikit-learn
-torch
 torchaudio
 soundfile
 tqdm
 flask
 flask_cors
+-e .
