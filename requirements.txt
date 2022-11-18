@@ -10,4 +10,5 @@ soundfile
 tqdm
 flask
 flask_cors
+torch
 -e .
