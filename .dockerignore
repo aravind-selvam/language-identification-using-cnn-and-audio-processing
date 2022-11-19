@@ -10,3 +10,4 @@ Dockerfile
 README.md 
 env/
 data/
+logs/

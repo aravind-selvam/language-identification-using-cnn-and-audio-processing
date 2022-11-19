@@ -29,6 +29,7 @@ def train():
 @cross_origin()
 def predictroute():
     config = PredictionPipelineConfig()
+    os.makedirs(config.prediction_artifact_dir, exist_ok=True)
     input_sounds_path = config.input_sounds_path
     app_artifacts = config.app_artifacts
     os.makedirs(app_artifacts, exist_ok=True)

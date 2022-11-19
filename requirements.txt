@@ -11,4 +11,5 @@ tqdm
 flask
 flask_cors
 torch
+librosa
 -e .
