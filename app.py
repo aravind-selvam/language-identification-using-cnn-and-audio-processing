@@ -3,6 +3,7 @@ import os
 from flask_cors import CORS, cross_origin
 from src.pipe.prediction_pipeline import LanguageData, SinglePrediction
 from src.entity.config_entity import PredictionPipelineConfig
+from pydub import AudioSegment
 from src.utils import decodesound
 from src.pipe.training_pipeline import TrainingPipeline
 
@@ -31,12 +32,15 @@ def predictroute():
     config = PredictionPipelineConfig()
     os.makedirs(config.prediction_artifact_dir, exist_ok=True)
     input_sounds_path = config.input_sounds_path
+    wave_sounds_path = config.wave_sounds_path
     app_artifacts = config.app_artifacts
     os.makedirs(app_artifacts, exist_ok=True)
     if request.method == 'POST':
         base_64 = request.json['sound']
         decodesound(base_64, input_sounds_path)
-        signal = LanguageData().load_data(input_sounds_path)
+        sound = AudioSegment.from_mp3(input_sounds_path)
+        sound.export(wave_sounds_path, format="wav")
+        signal = LanguageData().load_data(wave_sounds_path)
         signal.unsqueeze_(0)
         result = predictor.predict_language(input_signal=signal)
         return jsonify({"Result" : result})

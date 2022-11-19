@@ -126,7 +126,7 @@ class SinglePrediction:
                 num_classes = NUM_CLASSES
                 in_channels = IN_CHANNELS
                 prediction_model = CNNNetwork(in_channels=in_channels, num_classes=num_classes)
-                model_state_dict = torch.load(prediction_model_path)
+                model_state_dict = torch.load(prediction_model_path, map_location='cpu')
                 prediction_model.load_state_dict(model_state_dict['model_state_dict'])
                 prediction_model.eval()
             return prediction_model

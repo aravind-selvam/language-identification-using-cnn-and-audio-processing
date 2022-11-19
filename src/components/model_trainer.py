@@ -124,3 +124,4 @@ class ModelTrainer:
             return model_trainer_artifacts
         except Exception as e:
             raise CustomException(e, sys)
+            
