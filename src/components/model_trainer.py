@@ -1,7 +1,6 @@
 import torch
 from src.entity.config_entity import ModelTrainerConfig
 from src.entity.artifact_entity import DataPreprocessingArtifacts, ModelTrainerArtifacts
-from src.components.dataset_custom import IndianLanguageDataset
 from src.utils.gpu_functions import DeviceDataLoader, get_default_device, to_device
 from src.exceptions import CustomException
 from torch.optim.lr_scheduler import StepLR 
@@ -16,14 +15,12 @@ class ModelTrainer:
     Model Trainer
     """
     def __init__(self, modeltrainer_config: ModelTrainerConfig,
-                data_preprocessing_artifacts: DataPreprocessingArtifacts,
                 optimizer_func: torch.optim.Adam,
                 model,
                 train_data,
                 test_data):
             try: 
                 self.model_trainer_config = modeltrainer_config
-                self.data_preprocessing_artifacts = data_preprocessing_artifacts
                 self.learning_rate = modeltrainer_config.learning_rate 
                 self.epochs = modeltrainer_config.epochs
                 self.optimizer_func = optimizer_func
