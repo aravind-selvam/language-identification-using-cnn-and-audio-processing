@@ -1,26 +1,112 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+  continuous-integration:
     docker:
       - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    resource_class: medium
+    steps:
+      - checkout
+
+      - run:
+          name: Lint code
+          command: echo "Linting repository"
+
+      - run: 
+          name: run test
+          command: echo "Test complete"
+
+  continuous-delivery:
+    docker:
+      - image: google/cloud-sdk
+    resource_class: medium
+    environment:
+        REPOSITORY: language-identification-docker-repo
+        IMAGE_NAME: language-identification-docker-image
+        IMAGE_TAG: latest
+        GOOGLE_PROJECT_ID: project-neuron-368805
+        GOOGLE_COMPUTE_ZONE: asia-south1
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Authenticate with Google
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+        
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+      - run:
+          name: Login to Artifact Registry
+          command: gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-docker.pkg.dev
+
+      - run:
+          name: Docker build
+          command: docker build -t "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG" .
+
+      - run:
+          name: Docker Push
+          command: docker push "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+
+  continuous-deployment:
+      machine: true
+      resource_class: self-hosted
+      environment:
+        REPOSITORY: language-identification-docker-repo
+        IMAGE_NAME: language-identification-docker-image
+        IMAGE_TAG: latest
+        GOOGLE_PROJECT_ID: project-neuron-368805
+        GOOGLE_COMPUTE_ZONE: asia-south1
+
+      steps:
+        - run:
+            name: Authenticate with Google Cloud
+            command: |
+              echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+              gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+              gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+        - run:
+            name: Login to Artifact Registry
+            command: gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-docker.pkg.dev
+
+        - run:
+            name: Authenticate to Artifact Registry
+            command: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev"
+
+        - run:
+            name: Docker pull
+            command: docker pull "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+
+        - run:
+            name: Run Image
+            command: |-
+              docker run -d -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" -p 80:8080 "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+        
+        - run:
+            name: Docker System Prune to Remove Old Images
+            command: sudo docker system prune -f
+
 workflows:
-  say-hello-workflow:
+  CICD:
     jobs:
-      - say-hello
+      - continuous-integration
+
+      - continuous-delivery:
+          requires:
+            - continuous-integration
+
+      - sanity-check:
+          type: approval
+          requires:
+          - continuous-delivery
+
+      - continuous-deployment:
+          requires:
+            - sanity-check
+            - continuous-integration
+            - continuous-delivery
+
