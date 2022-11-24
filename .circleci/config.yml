@@ -88,7 +88,7 @@ jobs:
         
         - run:
             name: Docker System Prune to Remove Old Images
-            command: sudo docker system prune -f
+            command: docker system prune -f
 
 workflows:
   CICD:
