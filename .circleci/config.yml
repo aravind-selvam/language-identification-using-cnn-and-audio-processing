@@ -53,7 +53,7 @@ jobs:
 
   continuous-deployment:
       machine: true
-      resource_class: self-hosted
+      resource_class: deep-learning-01/dl-ineuron
       environment:
         REPOSITORY: language-identification-docker-repo
         IMAGE_NAME: language-identification-docker-image
