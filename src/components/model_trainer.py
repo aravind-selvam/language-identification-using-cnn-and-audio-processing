@@ -1,24 +1,27 @@
+import os
+import sys
+
 import torch
-from src.entity.config_entity import ModelTrainerConfig
-from src.entity.artifact_entity import DataPreprocessingArtifacts, ModelTrainerArtifacts
-from src.utils.gpu_functions import DeviceDataLoader, get_default_device, to_device
-from src.exceptions import CustomException
-from torch.optim.lr_scheduler import StepLR 
+from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DataLoader
-from src.logger import logging
 from tqdm import tqdm
-import os, sys
+
+from src.entity.artifact_entity import (DataPreprocessingArtifacts,
+                                        ModelTrainerArtifacts)
+from src.entity.config_entity import ModelTrainerConfig
+from src.exceptions import CustomException
+from src.logger import logging
+from src.utils.gpu_functions import (DeviceDataLoader, get_default_device,
+                                     to_device)
 
 
+# This class is used to train the model using the batch data provided by the data loader class
 class ModelTrainer:
-    """
-    Model Trainer
-    """
     def __init__(self, modeltrainer_config: ModelTrainerConfig,
                 optimizer_func: torch.optim.Adam,
                 model,
                 train_data,
-                test_data):
+                test_data)-> None:
             try: 
                 self.model_trainer_config = modeltrainer_config
                 self.learning_rate = modeltrainer_config.learning_rate 
@@ -33,6 +36,17 @@ class ModelTrainer:
     
     @torch.no_grad()
     def evaluate(self, model, val_loader):
+        """
+        It takes a model and a validation loader as input, and returns the validation loss and the
+        validation accuracy
+        
+        Args:
+          model: The model to be trained.
+          val_loader: the validation data loader
+        
+        Returns:
+          The validation loss and the validation accuracy.
+        """
         try:
             model.eval()
             outputs = [model.validation_step(batch) for batch in val_loader]
@@ -40,7 +54,18 @@ class ModelTrainer:
         except Exception as e:
             raise CustomException(e, sys)
 
-    def fit(self, train_loader, val_loader):
+    def fit(self, train_loader, val_loader)-> list:
+        """
+        It takes a model, a training data loader, and a validation data loader, and trains the model for the
+        specified number of epochs
+        
+        Args:
+          train_loader: the training data loader
+          val_loader: the validation data loader
+        
+        Returns:
+          The history of the training process.
+        """
         try:
             history = []
             self.model.train()
@@ -79,7 +104,13 @@ class ModelTrainer:
         except Exception as e:
             raise CustomException(e, sys)
 
-    def get_dataloader(self,) -> DataLoader:
+    def get_dataloader(self) -> DataLoader:
+        """
+        It returns a tuple of two DataLoader objects, one for training and one for validation
+        
+        Returns:
+          A tuple of two DataLoader objects.
+        """
         try:
             train_loader = DataLoader(self.train_data,
                                     batch_size=self.model_trainer_config.batch_size,
@@ -97,6 +128,12 @@ class ModelTrainer:
             raise CustomException(e, sys)
 
     def initiate_model_trainer(self) -> ModelTrainerArtifacts:
+        """
+        The function initiates the model trainer component
+        
+        Returns:
+          The model_trainer_artifacts is being returned.
+        """
         try:
             logging.info("Starting model trainer component...")
 

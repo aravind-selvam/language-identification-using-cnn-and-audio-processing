@@ -1,17 +1,24 @@
-from src.logger import logging
-import os, sys
+import os
+import sys
+
 import torch
 import torchaudio
-from src.cloud_storage.s3_operations import S3Sync
 
-from src.exceptions import CustomException
-from src.entity.config_entity import PredictionPipelineConfig, CustomDatasetConfig, DataPreprocessingConfig
+from src.cloud_storage.s3_operations import S3Sync
 from src.constants import *
+from src.entity.config_entity import (CustomDatasetConfig,
+                                      DataPreprocessingConfig,
+                                      PredictionPipelineConfig)
+from src.exceptions import CustomException
+from src.logger import logging
 from src.models.final_model import CNNNetwork
 from src.utils import load_object
 
 
 class LanguageData:
+    """
+    Custom dataset class for prediction pipeline
+    """
     def __init__(self):
         try:
             self.dataset_config = CustomDatasetConfig()
@@ -77,6 +84,9 @@ class LanguageData:
             raise CustomException(e,sys)
 
 class SinglePrediction:
+    """
+    Single prediction class for single prediction used in application
+    """
     def __init__(self, prediction_pipeline_config: PredictionPipelineConfig):
         try: 
             self.prediction_pipeline_config = prediction_pipeline_config
@@ -86,6 +96,13 @@ class SinglePrediction:
             raise CustomException(e, sys)
 
     def _get_model_in_production(self):
+        """
+        It checks if the model is available in the s3 bucket, if available, it downloads it to the local machine
+        and returns the path to the model
+        
+        Returns:
+          The path to the model.
+        """
         try:
             s3_model_path = self.prediction_pipeline_config.s3_model_path
             model_download_path = self.prediction_pipeline_config.model_download_path
@@ -105,6 +122,18 @@ class SinglePrediction:
 
     @staticmethod
     def prediction_step(model, input_signal, class_mapping):
+        """
+        The function takes in a model, an input signal, and a class mapping. It then runs the model on the
+        input signal, and returns the language that corresponds to the predicted label.
+        
+        Args:
+          model: the model that you want to use for prediction
+          input_signal: the audio signal that we want to classify
+          class_mapping: a dictionary of the form {'language': label}
+        
+        Returns:
+          The language that is being predicted.
+        """
         try: 
             model.eval()
             with torch.no_grad():
@@ -118,6 +147,12 @@ class SinglePrediction:
             raise CustomException(e, sys)
     
     def get_model(self):
+        """
+        It loads the model from the path and returns the model object for prediction.
+        
+        Returns:
+          A model object
+        """
         try: 
             prediction_model_path = self._get_model_in_production()
             if prediction_model_path is None:
@@ -134,6 +169,16 @@ class SinglePrediction:
             raise CustomException(e, sys)
     
     def predict_language(self, input_signal):
+        """
+        It downloads the model and the class mappings from S3, and then uses the model to predict the
+        language of the input signal
+        
+        Args:
+          input_signal: The input signal is the text that you want to predict the language for.
+        
+        Returns:
+          The output is a dictionary with the following keys:
+        """
         try: 
             prediction_model = self.get_model()
             os.makedirs(self.prediction_pipeline_config.prediction_artifact_dir, exist_ok=True)

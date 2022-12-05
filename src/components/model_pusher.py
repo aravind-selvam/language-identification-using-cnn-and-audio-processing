@@ -1,16 +1,26 @@
-from src.entity.artifact_entity import ModelEvaluationArtifacts, ModelPusherArtifacts
-from src.cloud_storage.s3_operations import S3Sync
-from src.constants import TRAINED_MODEL_NAME
-from src.logger import logging
-from src.exceptions import CustomException
 import sys
 
+from src.cloud_storage.s3_operations import S3Sync
+from src.constants import TRAINED_MODEL_NAME
+from src.entity.artifact_entity import (ModelEvaluationArtifacts,
+                                        ModelPusherArtifacts)
+from src.exceptions import CustomException
+from src.logger import logging
 
+
+# This class is responsible for pushing the trained model to the production server storage if the trained model is accepted
 class ModelPusher:
     def __init__(self, model_evaluation_artifacts: ModelEvaluationArtifacts):
         self.model_evaluation_artifacts = model_evaluation_artifacts
 
     def initiate_model_pusher(self):
+        """
+        The function initiates the model pusher component and pushes the current trained model to the
+        production server storage if the model is accepted by the model evaluation component
+        
+        Returns:
+          The ModelPusherArtifacts class is being returned.
+        """
         try:
             logging.info("Initiating model pusher component")
             if self.model_evaluation_artifacts.is_model_accepted:

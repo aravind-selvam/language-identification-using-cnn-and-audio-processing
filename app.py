@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify, render_template
 import os
+
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS, cross_origin
-from src.pipe.prediction_pipeline import LanguageData, SinglePrediction
-from src.entity.config_entity import PredictionPipelineConfig
 from pydub import AudioSegment
-from src.utils import decodesound
+
+from src.entity.config_entity import PredictionPipelineConfig
+from src.pipe.prediction_pipeline import LanguageData, SinglePrediction
 from src.pipe.training_pipeline import TrainingPipeline
+from src.utils import decodesound
 
 app = Flask(__name__)
 CORS(app)
