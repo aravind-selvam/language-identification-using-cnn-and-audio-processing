@@ -16,12 +16,12 @@
 
 
 ## Problem statement
-The goal of this project is to build a pipeline to detect vehicles.
+The goal of this project is to build a application to indentify $ Indian languages.
 
 ## Solution Proposed
-The solution proposed for the above problem is that we have used Computer vision to solve the above problem to detect the vehicle.
-We have used the Pytorch framework to solve the above problem also we created our custom object detection network with the help of PyTorch.
-Then we created an API that takes in the images and predicts the number of vehicles. Then we dockerized the application and deployed the model on the AWS cloud.
+The solution proposed for the above problem is that we have used Deep learning to solve the above problem to detect the vehicle.
+We have used the Pytorch framework to solve the above problem also we created our custom Language Identification network with the help of PyTorch.
+Then we created an API that takes in the audio.mp3 and predicts the language. Then we dockerized the application and deployed the model on the AWS cloud.
 
 ## Dataset Used
 
@@ -87,7 +87,7 @@ http://localhost:8080
 2. Build the Docker image
 
 ```
-docker build --build-arg AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID> --build-arg AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> --build-arg AWS_DEFAULT_REGION=<AWS_DEFAULT_REGION> . 
+docker build -t langapp .
 
 ```
 
@@ -126,6 +126,6 @@ docker run -d -p 8080:8080 <IMAGEID>
 
 ## Conclusion
 
-Can be used for language Identification 
+Can be used for language Identification in videos and other audio files in any organization.
 
 =====================================================================
