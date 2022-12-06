@@ -21,7 +21,7 @@ The goal of this project is to build a application to indentify $ Indian languag
 ## Solution Proposed
 The solution proposed for the above problem is that we have used Deep learning to solve the above problem to identify spoken language from audio.
 We have used the Pytorch framework to solve the above problem also we created our custom Language Identification network with the help of PyTorch.
-Then we created an API that takes in the audio.mp3 and predicts the language. Then we dockerized the application and deployed the model on the AWS cloud.
+Then we created an API that takes in the audio.mp3 and predicts the language. Then we dockerized the application and deployed the model on the GCP cloud.
 
 ## Dataset Used
 
