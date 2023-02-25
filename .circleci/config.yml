@@ -1,0 +1,111 @@
+version: 2.1
+
+jobs:
+  continuous-integration:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium
+    steps:
+      - checkout
+
+      - run:
+          name: Lint code
+          command: echo "Linting repository"
+
+      - run: 
+          name: run test
+          command: echo "Test complete"
+
+  continuous-delivery:
+    docker:
+      - image: google/cloud-sdk
+    resource_class: medium
+    environment:
+        REPOSITORY: language-identification-docker-repo
+        IMAGE_NAME: language-identification-docker-image
+        IMAGE_TAG: latest
+        GOOGLE_PROJECT_ID: project-neuron-368805
+        GOOGLE_COMPUTE_ZONE: asia-south1
+    steps:
+      - checkout
+      - run:
+          name: Authenticate with Google
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+        
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+
+      - run:
+          name: Login to Artifact Registry
+          command: gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-docker.pkg.dev
+
+      - run:
+          name: Docker build
+          command: docker build -t "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG" .
+
+      - run:
+          name: Docker Push
+          command: docker push "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+
+  continuous-deployment:
+      machine: true
+      resource_class: deep-learning-01/dl-ineuron
+      environment:
+        REPOSITORY: language-identification-docker-repo
+        IMAGE_NAME: language-identification-docker-image
+        IMAGE_TAG: latest
+        GOOGLE_PROJECT_ID: project-neuron-368805
+        GOOGLE_COMPUTE_ZONE: asia-south1
+
+      steps:
+        - run:
+            name: Authenticate with Google Cloud
+            command: |
+              echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+              gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+              gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+        - run:
+            name: Login to Artifact Registry
+            command: gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-docker.pkg.dev
+
+        - run:
+            name: Authenticate to Artifact Registry
+            command: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev"
+
+        - run:
+            name: Docker pull
+            command: docker pull "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+
+        - run:
+            name: Run Image
+            command: |-
+              docker run -d -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" -p 80:8080 "$GOOGLE_COMPUTE_ZONE-docker.pkg.dev/$GOOGLE_PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+        
+        - run:
+            name: Docker System Prune to Remove Old Images
+            command: docker system prune -f
+
+workflows:
+  CICD:
+    jobs:
+      - continuous-integration
+
+      - continuous-delivery:
+          requires:
+            - continuous-integration
+
+      - sanity-check:
+          type: approval
+          requires:
+          - continuous-delivery
+
+      - continuous-deployment:
+          requires:
+            - sanity-check
+            - continuous-integration
+            - continuous-delivery
