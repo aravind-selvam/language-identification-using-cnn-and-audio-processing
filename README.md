@@ -1,5 +1,5 @@
 # Language Identification using CNN PyTorch
-
+# New version link : [V2](https://github.com/aravind-selvam/language_identification-using-cnn-and-audio-processing.git)
 #### Language and Libraries
 
 <p>
@@ -22,6 +22,8 @@ The goal of this project is to build a application to indentify $ Indian languag
 The solution proposed for the above problem is that we have used Deep learning to solve the above problem to identify spoken language from audio.
 We have used the Pytorch framework to solve the above problem also we created our custom Language Identification network with the help of PyTorch.
 Then we created an API that takes in the audio.mp3 and predicts the language. Then we dockerized the application and deployed the model on the GCP cloud.
+
+
 
 ## Dataset Used
 
